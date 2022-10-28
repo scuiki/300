@@ -94,9 +94,8 @@ char tp;
 	nums = busca_stand (ps, tp);
 	
 	if (nums == -1)
-		printf ("\nNao ha stands disponiveis");
+		printf ("\nNao ha stands disponiveis\n");
 	else {
-		ps->status = 'A';
 		pc->numstand = nums + 1;
 		printf ("\nNome: ");
 		fflush (stdin);
@@ -116,9 +115,12 @@ int busca_stand (stand *ps, char tp) {
 int i;
 
 	for (i = 0; i < 5; i++, ps++) {
-		if (ps->tipo == tp && ps->status == 'L')
+		if (ps->tipo == tp && ps->status == 'L') {
+			ps->status = 'A';
 			return i;
+		}
 	}
+	
 return -1;	
 }
 
