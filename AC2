@@ -1,0 +1,157 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct stand {
+	int reg;
+	char tipo;
+	char status;
+}stand;
+
+typedef struct cliente {
+	char CPF[13];
+	char nome[80];
+	int numstand;
+	int dias;
+}cliente;
+
+void aloca_stand (stand **ps, int qtde);
+void aloca_cliente (cliente **pc, int qtde);
+void cadastra_stand (stand *ps, int qtde);
+void cadastra_cliente (cliente *pc, stand *ps);
+int busca_stand (stand *ps, char tp);
+void devolucao (cliente *pc, int qtde, stand *ps);
+int busca_vago (cliente *pc, int qtde, int q);
+
+int main () {
+
+stand *ps = NULL;
+cliente *pc = NULL;
+int op, cont = 0, pos, i;
+
+aloca_stand (&ps, 5);
+cadastra_stand (ps, 5);
+
+	do {
+		system ("cls");
+		printf ("Stands cadastrados: ");
+		for (i = 0; i < 5; i++)
+			printf ("%i ", (ps + i)->reg);
+		printf ("\n[1] Locacao\n[2] Devolucao\n[3] Fim\n");
+		fflush (stdin);
+		scanf ("%i", &op);
+		
+		switch (op) {
+			case 1: pos = busca_vago (pc, cont, -1);
+				if (pos == -1) {
+					aloca_cliente (&pc, cont + 1);
+					pos = cont;
+					cont++;
+				}
+				cadastra_cliente (pc+pos, ps);
+					break;
+			case 2: devolucao (pc, cont, ps);
+					break;
+		}
+	} while (op != 3);
+	
+}
+
+void aloca_stand (stand **ps, int qtde) {
+	if ((*ps = (stand*)realloc(*ps, qtde*sizeof(stand)))==NULL)
+		exit(1);
+}
+
+void aloca_cliente (cliente **pc, int qtde) {
+	if ((*pc = (cliente*)realloc(*pc, qtde*sizeof(cliente)))==NULL)
+		exit(1);
+}
+
+void cadastra_stand (stand *ps, int qtde) {
+int i;
+	for (i = 0; i < qtde; i++, ps++) {
+		ps->status = 'L';
+		ps->reg = i + 1;
+		
+		if (i < 2)
+			ps->tipo = 'P';
+		if (i >=2 && i < 4)
+			ps->tipo = 'M';
+		if (i == 4)
+			ps->tipo = 'G'; 
+	}
+}
+
+void cadastra_cliente (cliente *pc, stand *ps) {
+int nums;
+char tp;
+
+	do {
+		printf ("\nTipo de stand: ");
+		fflush (stdin);
+		scanf ("%c", &tp);
+	} while (tp != 'P' && tp != 'M' && tp != 'G');
+	
+	nums = busca_stand (ps, tp);
+	
+	if (nums == -1)
+		printf ("\nNao ha stands disponiveis");
+	else {
+		ps->status = 'A';
+		pc->numstand = nums + 1;
+		printf ("\nNome: ");
+		fflush (stdin);
+		gets (pc->nome);
+		printf ("\nCPF: ");
+		fflush (stdin);
+		gets (pc->CPF);
+		printf ("\nQuantos dias: ");
+		fflush (stdin);
+		scanf ("%i", &(pc->dias));
+		printf ("\nCadastro realizado com sucesso, stand: %i\n", pc->numstand);
+	}
+	system ("pause");
+}
+
+int busca_stand (stand *ps, char tp) {
+int i;
+
+	for (i = 0; i < 5; i++, ps++) {
+		if (ps->tipo == tp && ps->status == 'L')
+			return i;
+	}
+return -1;	
+}
+
+void devolucao (cliente *pc, int qtde, stand *ps) {
+int i;
+char CPF[13];
+
+	printf ("\nCPF: ");
+	fflush(stdin);
+	gets (CPF);
+	
+	for (i = 0; i < qtde; i++, pc++) {
+		if (strcmp(pc->CPF, CPF) == 0) {
+			(ps + pc->numstand - 1)->status = 'L';
+			printf ("\nCliente: %s\nStand: %i\nTipo: %c\n", pc->nome, pc->numstand, (ps + pc->numstand - 1)->tipo);
+			
+			if ((ps + pc->numstand - 1)->tipo == 'P')
+				printf ("\nPagar: %i\n", (pc->dias)*500);
+			if ((ps + pc->numstand - 1)->tipo == 'M')
+				printf ("\nPagar: %i\n", (pc->dias)*750);
+			if ((ps + pc->numstand - 1)->tipo == 'G')
+				printf ("\nPagar: %i\n", (pc->dias)*1000);
+			system ("pause");
+		pc->numstand = -1;
+		}
+	}	
+}
+
+int busca_vago (cliente *pc, int qtde, int q) {
+int i;
+	for (i = 0; i < qtde; i++, pc++) {
+		if (pc->numstand == q)
+			return i;
+	}
+return -1;	
+}
