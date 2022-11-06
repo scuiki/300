@@ -35,8 +35,8 @@ void aloca_dance (dance **d, int qtd);
 void cadastra_dance (dance *d, int qtd);
 void cadastra_aluno (aluno *a, dance *d);
 int busca_dance (dance *d, int grau, int qtd);
-int busca_vago (aluno *a, int qtd, int q);
 void encerrar_matricula (aluno *a, int qtd, dance *d);
+int busca_vago (aluno *a, int qtd, int q);
 
 //4
 void main () {
@@ -59,7 +59,7 @@ int op, cont = 0, pos, i;
 	do {
 		system ("cls");
 		printf ("Quantidade de alunos por sala:\nSala 1: %i\nSala 2: %i\nSala 3: %i\n\n", pd->qaluno, (pd + 1)->qaluno, (pd + 2)->qaluno);
-		printf ("[1]Matricula\n[2]Encerrar Matricula\n[3]Sair\n");
+		printf ("[1]Matricula\n[2]Encerrar Matricula\n[3]Sair\n\n");
 		fflush (stdin);
 		scanf ("\n%i", &op);
 			
@@ -176,11 +176,17 @@ char CPF[13];
 	
 	system ("cls");
 	printf ("\nCPF: ");
+	fflush (stdin);
 	gets (CPF);
 	
 	for (i = 0; i < qtd; i++, a++) {
 		if (strcmp (a->CPF, CPF) == 0) {
-			printf ("\n\nNome: %s\nRegistro: %i\nModalidade: %s\nGrau: %i\n", a->nome, (d + a->numaula - 1)->regaula, (d + a->numaula - 1)->modalidade, (d + a->numaula - 1)->grau);
+			printf ("\n\nNome: %s\nRegistro: %i\nModalidade: %s\nGrau: %i\nValor: %.2f\n\n", a->nome, (d + a->numaula - 1)->regaula, (d + a->numaula - 1)->modalidade, (d + a->numaula - 1)->grau, (d + a->numaula - 1)->valor);
+			(d + a->numaula - 1)->qaluno--;
+			a->numaula = -1;
+			memset(a->CPF, -1, 13);//Essa linha não é necessária, nem se preocupem com ela
 		}
+		else printf ("\nCPF invalido\n\n");
 	}
+	system ("pause");
 }
