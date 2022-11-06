@@ -1,0 +1,186 @@
+//1
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+//2
+typedef struct	aluno{
+
+    char CPF[13];                    // CPF do aluno
+
+    char nome[80];                 // nome do aluno
+
+    int	numaula;                   // número do registro da aula
+
+}aluno;
+
+typedef struct	dance{
+
+    int regaula;                     //registro da aula
+
+    int qaluno;                       //registra a quantidade de alunos matriculados
+
+    char modalidade[20];      //exemplo: ballet, jazz, street
+
+    int grau;                          //exemplo: [1]iniciante, [2]intermediário, [3]avançado
+
+    float valor;                         //valor da aula
+
+}dance;
+
+//3
+
+void aloca_aluno (aluno **a, int qtd);
+void aloca_dance (dance **d, int qtd);
+void cadastra_dance (dance *d, int qtd);
+void cadastra_aluno (aluno *a, dance *d);
+int busca_dance (dance *d, int grau, int qtd);
+int busca_vago (aluno *a, int qtd, int q);
+void encerrar_matricula (aluno *a, int qtd, dance *d);
+
+//4
+void main () {
+
+//5	
+aluno *pa = NULL;
+dance *pd = NULL;
+//8
+int op, cont = 0, pos, i;
+//6.5
+	aloca_dance (&pd, 3);
+//7.5
+	cadastra_dance (pd, 3);
+	
+	printf ("%s\n\n", pd->modalidade);
+	for (i = 0; i < 3; i++)
+		printf ("Sala: %i\nGrau: %i\nValor: %.2f\n\n", (pd + i)->regaula, (pd + i)->grau, (pd + i)->valor); 
+	system ("pause");
+//9	
+	do {
+		system ("cls");
+		printf ("Quantidade de alunos por sala:\nSala 1: %i\nSala 2: %i\nSala 3: %i\n\n", pd->qaluno, (pd + 1)->qaluno, (pd + 2)->qaluno);
+		printf ("[1]Matricula\n[2]Encerrar Matricula\n[3]Sair\n");
+		fflush (stdin);
+		scanf ("\n%i", &op);
+			
+		switch (op) {
+			case 1: pos = busca_vago (pa, cont, -1);
+				if (pos == -1) {
+					aloca_aluno (&pa, cont + 1);
+					pos = cont;
+					cont++;
+				}
+				cadastra_aluno (pa + pos, pd);
+					break;
+			//15
+			case 2: encerrar_matricula (pa, cont, pd);
+					break;
+		}
+	} while (op != 3);
+	
+}
+//6
+void aloca_aluno (aluno **a, int qtd) {
+	if((*a=(aluno*)realloc(*a,qtd*sizeof(aluno)))==NULL)
+		exit (1);
+}
+
+void aloca_dance (dance **d, int qtd) {
+	if((*d=(dance*)realloc(*d,qtd*sizeof(dance)))==NULL)
+		exit (1);
+}
+//7
+void cadastra_dance (dance *d, int qtd) {
+int i;
+char modalidade[20] = "Ballet";
+
+	for (i = 0; i < qtd; i++, d++) {
+		d->regaula = i + 1;
+		d->qaluno = 0;
+		strcpy (d->modalidade, modalidade);
+		
+		if (i == 0) {
+			d->grau = 1;
+			d->valor = 150.0;
+		}
+		
+		if (i == 1) {
+			d->grau = 2;
+			d->valor = 200.0;
+		}
+		
+		if (i == 2) {
+			d->grau = 3;
+			d->valor = 300.0;	
+		}
+	}
+}
+
+//10
+int busca_vago (aluno *a, int qtd, int q) {
+int i;
+	for (i = 0; i < qtd; i++, a++)
+		if (a->numaula == q)
+			return i;
+return -1;
+}
+
+//11
+void cadastra_aluno (aluno *a, dance *d) {
+int grau, numdance;
+
+do {
+	system ("cls");
+	printf ("\nGrau: ");
+	fflush (stdin);
+	scanf ("%i", &grau);
+} while (grau != 1 && grau != 2 && grau != 3);
+
+	numdance = busca_dance (d, grau, 3);
+//13	
+	if (numdance == -1) {
+		printf ("\nNao ha salas disponiveis.\n");
+		system ("pause");
+	}
+	else {
+		printf ("\nCPF: ");
+		fflush (stdin);
+		gets (a->CPF);
+		printf ("\nNome: ");
+		fflush (stdin);
+		gets (a->nome);
+		a->numaula = numdance + 1;
+	}
+	printf ("\nCadastro efetuado com sucesso. Sala: %i\n\n", a->numaula);
+	system ("pause");
+}
+
+//12
+int busca_dance (dance *d, int grau, int qtd) {
+int i;
+
+	for (i = 0; i < qtd; i++, d++) {
+		if (d->grau == grau) {
+			(d->qaluno)++;
+		return i;
+		}
+	}
+		
+return -1;
+}
+
+//14
+void encerrar_matricula (aluno *a, int qtd, dance *d) {
+int i;	
+char CPF[13];
+	
+	system ("cls");
+	printf ("\nCPF: ");
+	gets (CPF);
+	
+	for (i = 0; i < qtd; i++, a++) {
+		if (strcmp (a->CPF, CPF) == 0) {
+			printf ("\n\nNome: %s\nRegistro: %i\nModalidade: %s\nGrau: %i\n", a->nome, (d + a->numaula - 1)->regaula, (d + a->numaula - 1)->modalidade, (d + a->numaula - 1)->grau);
+		}
+	}
+}
