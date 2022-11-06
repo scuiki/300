@@ -186,7 +186,6 @@ char CPF[13];
 			a->numaula = -1;
 			memset(a->CPF, -1, 13);//Essa linha não é necessária, nem se preocupem com ela
 		}
-		else printf ("\nCPF invalido\n\n");
 	}
 	system ("pause");
 }
